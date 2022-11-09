@@ -4,12 +4,23 @@ import browser_cookie3
 import time
 from winotify import Notification, audio
 
+course_dep = "CSE"
+# If < 100, +X, if < 10, ++X
+course_num = "151A"
+
 # Desktop notification setup
-test = Notification(app_id="SPAWNCAMP",
+OPENING_NOTIFY = Notification(app_id="SPAWNCAMP",
                     title="OPENING FOUND",
                     msg="WAKE THE FUCK UP",
                     duration="long")
-test.set_audio(audio.LoopingAlarm, loop=True)
+
+OPENING_NOTIFY.set_audio(audio.LoopingAlarm, loop=True)
+
+RESET_COOKIES = Notification(app_id="SPAWNCAMP",
+                             title="RESET CHROME COOKIES",
+                             msg="WAKE THE FUCK UP",
+                             duration="long")
+RESET_COOKIES.set_audio(audio.LoopingAlarm, loop=True)
 
 # Grab cookies from chrome for login credentials
 cookies = browser_cookie3.chrome(domain_name='.ucsd.edu')
@@ -22,11 +33,17 @@ prev = None
 
 while True:
     # HTTP GET for class info
-    request_out = requests.get("https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode=CSE&crsecode=151A&termcode=WI23", cookies=cookie_dict)
-    request_json = json.loads(request_out.text)
-    
+    request_out = requests.get(f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={course_dep}&crsecode={course_num}&termcode=WI23", cookies=cookie_dict)
+    try:
+        request_json = json.loads(request_out.text)
+    except json.decoder.JSONDecodeError:
+        RESET_COOKIES.show()
+        exit(1)
+
     # If no change -> no notification
     if prev == request_json:
+        print("no change :(")
+        print("-------------------------------")
         time.sleep(1)
         continue
 
@@ -39,12 +56,12 @@ while True:
         if request_json[i]['AVAIL_SEAT'] != request_json[i]['SCTN_CPCTY_QTY'] and int(request_json[i]['AVAIL_SEAT']) > 0:
             print(f"Section: {request_json[i]['SECT_CODE']} Seats: {request_json[i]['AVAIL_SEAT']}")
             # Show desktop notification
-            test.show()
             cnt += 1
-    if cnt == 0:
-        print("Nothing :(")
-        
+    if cnt != 0:
+        OPENING_NOTIFY.msg = f"OPENING FOUND IN {course_dep} {course_num}"
+        OPENING_NOTIFY.show()
+
     print("-------------------------------")
-    
+
     # Avoid getting FBI'd for DDoSing
     time.sleep(1)
