@@ -1,3 +1,7 @@
+# Written by Benjamin Xia 笨虾
+# November 8, 2022
+# 我的脑子很小。
+
 import requests
 import json
 import browser_cookie3
@@ -15,6 +19,10 @@ OPENING_NOTIFY = Notification(app_id = "SPAWNCAMP",
                               duration = "long")
 OPENING_NOTIFY.set_audio(audio.LoopingAlarm, loop = True)
 
+# Webreg requires you to be signed in in order to receive any information
+# This script uses your existing chrome cookies as authentication. 
+# Webreg automatically signs you out after some time, so you will need to
+# sign back in when the notification pops up. 
 RESET_COOKIES = Notification(app_id="SPAWNCAMP",
                              title="RESET CHROME COOKIES",
                              msg="Sign back into Webreg on Chrome",
@@ -63,37 +71,41 @@ def parse_course_num(code: str) -> str:
 
     return course_out + code[idx:]
 
-# Previous JSON output from HTTP get
-prev = None
+
+prev = None # Previous JSON output from HTTP get
 HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode=WI23"
 
 
 if __name__ == "__main__":
     while True:
+        # Fetch info from webreg
         requests_out = requests.get(HTTP_GET_URL, cookies = cookie_dict)
         requests_json = []
         try:
             requests_json = json.loads(requests_out.text)
-        except json.decoder.JSONDecodeError:
+        except json.decoder.JSONDecodeError: # Only happens when cookies expire, sign back into webreg!
             RESET_COOKIES.show()
             exit(1)
 
-        # No output if no change
+        # No output if no change from previous fetch
         if prev == requests_json:
             time.sleep(1)
             continue
         
         prev = requests_json
         cnt = 0
+        # See if any sections have open seats and print the sections with open spots. 
         for i in range(len(requests_json)):
             if requests_json[i]['AVAIL_SEAT'] != requests_json[i]['SCTN_CPCTY_QTY'] and int(requests_json[i]['AVAIL_SEAT']) > 0:
                 print(f"Section: {requests_json[i]['SECT_CODE']} Seats: {requests_json[i]['AVAIL_SEAT']}")
                 # Show desktop notification
                 cnt += 1
-                
+        
+        # Make notification if opening in a section. 
         if cnt != 0:
             OPENING_NOTIFY.msg = f"OPENING FOUND IN {COURSE_DEPT} {COURSE_CODE}"
             OPENING_NOTIFY.show()
             print("------------------------------------------")
         
+        # Avoid getting FBI'd for Ddosing webreg. 
         time.sleep(1)
