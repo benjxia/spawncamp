@@ -23,15 +23,15 @@ OPENING_NOTIFY.set_audio(audio.LoopingAlarm, loop = True)
 # This script uses your existing chrome cookies as authentication. 
 # Webreg automatically signs you out after some time, so you will need to
 # sign back in when the notification pops up. 
-RESET_COOKIES = Notification(app_id="SPAWNCAMP",
-                             title="RESET CHROME COOKIES",
-                             msg="Sign back into Webreg on Chrome",
-                             duration="long")
+RESET_COOKIES = Notification(app_id = "SPAWNCAMP",
+                             title = "RESET CHROME COOKIES",
+                             msg = "Sign back into Webreg on Chrome",
+                             duration = "long")
 RESET_COOKIES.set_audio(audio.LoopingAlarm8, loop = True)
 
 
 # Grab cookies from chrome for login credentials
-cookies = browser_cookie3.chrome(domain_name='.ucsd.edu')
+cookies = browser_cookie3.chrome(domain_name = '.ucsd.edu')
 cookie_dict = dict()
 for i in cookies:
     cookie_dict[i.name] = i.value
