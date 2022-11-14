@@ -11,6 +11,7 @@ from winotify import Notification, audio
 # EDIT THIS
 COURSE_DEPT = "CSE"
 COURSE_CODE = "151A"
+TERM_CODE = "WI23"  # ex. FA22 WI23 SP23 S123 S223
 
 # Notification stuff, avoid editing unless you hate the sound or are on mac
 OPENING_NOTIFY = Notification(app_id = "SPAWNCAMP",
@@ -73,7 +74,7 @@ def parse_course_num(code: str) -> str:
 
 
 prev = None # Previous JSON output from HTTP get
-HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode=WI23"
+HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode={TERM_CODE}"
 
 
 if __name__ == "__main__":
