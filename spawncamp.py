@@ -7,87 +7,52 @@ import json
 import browser_cookie3
 import time
 from winotify import Notification, audio
+from enroll import parse_course_num
+from enroll import enroll
+
 
 # EDIT THIS
 COURSE_DEPT = "PHYS"
 COURSE_CODE = "2CL"
 TERM_CODE = "WI23"  # ex. FA22 WI23 SP23 S123 S223
-SECTION_ID = ["098783", "098782"] # List of section ID's to enroll in
+SECTION_ID = ["098783", "098782"]  # List of section ID's to enroll in
 UNIT_CNT = "2.00"
 
-# Notification stuff, avoid editing unless you hate the sound or are on mac
-ENROLLMENT_NOTIFY = Notification(app_id = "SPAWNCAMP",
-                              title = "ENROLLMENT SUCCESSFUL",
-                              msg = "Enrollment worked :)",
-                              duration = "long")
-ENROLLMENT_NOTIFY.set_audio(audio.LoopingAlarm, loop = True)
-
-# Webreg requires you to be signed in in order to receive any information
-# This script uses your existing chrome cookies as authentication. 
-# Webreg automatically signs you out after some time, so you will need to
-# sign back in when the notification pops up. 
-RESET_COOKIES = Notification(app_id = "SPAWNCAMP",
-                             title = "RESET CHROME COOKIES",
-                             msg = "Sign back into Webreg on Chrome",
-                             duration = "long")
-RESET_COOKIES.set_audio(audio.LoopingAlarm8, loop = True)
-
-
 # Grab cookies from chrome for login credentials
-cookies = browser_cookie3.chrome(domain_name = '.ucsd.edu')
+cookies = browser_cookie3.chrome(domain_name='.ucsd.edu')
 cookie_dict = dict()
 for i in cookies:
     cookie_dict[i.name] = i.value
-    
-def parse_course_num(code: str) -> str:
-    """
-    Webreg's API is dumb, so if we need a course with code
-    151A, the parameter would be 151A, but if the number were < 100, we'd need
-    +XX, ex. +15L for CSE 15L or +10 for MATH 10 or something. For < 10, we'd
-    need ++, so ++1 for COGS 1. 
-    
-    Arguments:
-    code: Class code you want notifications for, like 101 for CSE 101.
-    
-    Returns:
-    API compatible version of the course code
-    """
-    course_num = ""
-    idx: int = 0
-    for i in range(len(code)):
-        if code[i].isdigit():
-            course_num += code[i]
-        else:
-            idx = i
-            break
 
-    course_num = int(course_num)
+# Notification stuff, avoid editing unless you hate the sound or are on mac
+ENROLLMENT_NOTIFY = Notification(app_id="SPAWNCAMP",
+                                 title="ENROLLMENT SUCCESSFUL",
+                                 msg="Enrollment worked :)",
+                                 duration="long")
+ENROLLMENT_NOTIFY.set_audio(audio.LoopingAlarm, loop=True)
 
-    course_out = ""
+# Webreg requires you to be signed in in order to receive any information
+# This script uses your existing chrome cookies as authentication.
+# Webreg automatically signs you out after some time, so you will need to
+# sign back in when the notification pops up.
+RESET_COOKIES = Notification(app_id="SPAWNCAMP",
+                             title="RESET CHROME COOKIES",
+                             msg="Sign back into Webreg on Chrome",
+                             duration="long")
+RESET_COOKIES.set_audio(audio.LoopingAlarm8, loop=True)
 
-    while course_num < 100:
-        course_out += "+"
-        course_num *= 10
-        
-    course_out += code[:idx]
+prev = None  # Previous JSON output from HTTP get
 
-    return course_out + code[idx:]
-
-
-prev = None # Previous JSON output from HTTP get
-
-COURSE_CODE = parse_course_num(COURSE_CODE)
-
-HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={COURSE_CODE}&termcode={TERM_CODE}"
+HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode={TERM_CODE}"
 
 if __name__ == "__main__":
     while True:
         # Fetch info from webreg
-        requests_out = requests.get(HTTP_GET_URL, cookies = cookie_dict)
+        requests_out = requests.get(HTTP_GET_URL, cookies=cookie_dict)
         requests_json = []
         try:
             requests_json = json.loads(requests_out.text)
-        except json.decoder.JSONDecodeError: # Only happens when cookies expire, sign back into webreg!
+        except json.decoder.JSONDecodeError:  # Only happens when cookies expire, sign back into webreg!
             RESET_COOKIES.show()
             exit(1)
 
@@ -95,22 +60,21 @@ if __name__ == "__main__":
         if prev == requests_json:
             time.sleep(1)
             continue
-        
+
         prev = requests_json
         cnt = 0
 
         # See if any sections have open seats and print the sections with open spots. 
         for i in range(len(requests_json)):
             # If current section has seats
-            if requests_json[i]["AVAIL_SEAT"] != requests_json[i]["SCTN_CPCTY_QTY"] and int(requests_json[i]["AVAIL_SEAT"]) > 0:
+            if requests_json[i]["AVAIL_SEAT"] != requests_json[i]["SCTN_CPCTY_QTY"] and int(
+                    requests_json[i]["AVAIL_SEAT"]) > 0:
                 # IF OPENING IN CORRECT SECTION FOUND, ENROLL IN COURSE
                 if requests_json[i]["SECTION_NUMBER"] in SECTION_ID:
                     print("OPENING FOUND")
-                    SECT = requests_json[i]["SECTION_NUMBER"]
-                    response = requests.post(f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/add-enroll?section={SECT}&grade=L&unit={UNIT_CNT}&subjcode={COURSE_DEPT}&crsecode={COURSE_CODE}&termcode={TERM_CODE}", cookies= cookie_dict)
-                    if response.status_code == 200:
+                    res = enroll(requests_json[i]["SECTION_NUMBER"], COURSE_DEPT, COURSE_CODE, TERM_CODE, UNIT_CNT)
+                    if res == 200:
                         ENROLLMENT_NOTIFY.show()
                         exit(0)
-        
         # Avoid getting FBI'd for Ddosing webreg. 
         time.sleep(1)

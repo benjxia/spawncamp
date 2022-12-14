@@ -12,14 +12,16 @@ This thing actually got me a spot in CSE 151A lol.
 
 ### Prerequisites:
 
-Spawncamp only works on Windows because I don't have a mac to test a potential macOS version***
-If you are on a mac you can remove the notifications and replace them with whatever you want.
+Spawncamp only works on Windows because I don't have a Mac or Linux machine to test a potential macOS version***
+If you are on Mac or Linux you can remove the notifications and replace them with whatever you want.  
+
+Spawncamp assumes you satisfy all prerequisites to enroll in the specified course.
 
 ### Installation
 
 1. Clone the repo onto your local machine
 2. Run `pip install -r requirements.txt` in the home directory of the repository.
-3. Edit the script to monitor the class you're trying to get in.
+3. Edit the script to monitor the class you're trying to get in, remove notifications if you're on Mac or Linux.
 
 ### Usage
 
