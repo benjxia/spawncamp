@@ -1,10 +1,10 @@
 # Spawncamp
 
 Spawncamp is ~~nobody's~~ everyone's favorite tool to use during **first pass enrollment**
-at UCSD. It will automatically enroll you in one of the sections you specify when an opening is found and push a desktop notification (remove notificaiton if you want)
+at UCSD. It will automatically enroll you in one of the sections you specify when an opening is found and push a desktop notification (remove notification if you want)
 
 Most useful for people with bad enrollment times and have to deal with full classes before even getting
-a chance to enroll. 
+a chance to enroll.
 
 This thing actually got me a spot in CSE 151A lol.
 
