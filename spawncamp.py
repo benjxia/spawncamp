@@ -43,9 +43,7 @@ RESET_COOKIES.set_audio(audio.LoopingAlarm8, loop=True)
 
 prev = None  # Previous JSON output from HTTP get
 
-COURSE_CODE = parse_course_num(COURSE_CODE)
-
-HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={COURSE_CODE}&termcode={TERM_CODE}"
+HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode={TERM_CODE}"
 
 if __name__ == "__main__":
     while True:
@@ -74,8 +72,9 @@ if __name__ == "__main__":
                 # IF OPENING IN CORRECT SECTION FOUND, ENROLL IN COURSE
                 if requests_json[i]["SECTION_NUMBER"] in SECTION_ID:
                     print("OPENING FOUND")
-                    SECT = requests_json[i]["SECTION_NUMBER"]
-                    # Insert enrollment script here
-
+                    res = enroll(requests_json[i]["SECTION_NUMBER"], COURSE_DEPT, COURSE_CODE, TERM_CODE, UNIT_CNT)
+                    if res == 200:
+                        ENROLLMENT_NOTIFY.show()
+                        exit(0)
         # Avoid getting FBI'd for Ddosing webreg. 
         time.sleep(1)
