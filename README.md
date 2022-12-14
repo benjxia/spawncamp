@@ -1,19 +1,19 @@
 # Spawncamp
 
 Spawncamp is ~~nobody's~~ everyone's favorite tool to use during **first pass enrollment**
-at UCSD. It will push a desktop notification when there is an opening in the class you specify.
+at UCSD. It will automatically enroll you in one of the sections you specify when an opening is found and push a desktop notification (remove notificaiton if you want)
 
 Most useful for people with bad enrollment times and have to deal with full classes before even getting
 a chance to enroll. 
 
-This thing actually got me a spot in CSE 151A lol. 
+This thing actually got me a spot in CSE 151A lol.
 
 ## Setup
 
 ### Prerequisites:
 
-Spawncamp only works on Windows because I don't have a mac to test a potential macOS version
-of this program on. If you're on mac, you can try to edit the script or make your own version if you want.
+Spawncamp only works on Windows because I don't have a mac to test a potential macOS version***
+If you are on a mac you can remove the notifications and replace them with whatever you want.
 
 ### Installation
 
