@@ -22,11 +22,11 @@ for i in cookies:
     cookie_dict[i.name] = i.value
 
 
-HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/add-enroll?section=098779&grade=L&unit=2.00&subjcode=PHYS&crsecode=++2CL&termcode=WI23"
+HTTP_POST_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/add-enroll?section=098779&grade=L&unit=2.00&subjcode=PHYS&crsecode=++2CL&termcode=WI23"
 
 
-request_json = requests.post(HTTP_GET_URL, cookies= cookie_dict)
-print(str(request_json))
+request_json = requests.post(HTTP_POST_URL, cookies= cookie_dict)
+print(request_json)
 
 
 # if __name__ == "__main__":

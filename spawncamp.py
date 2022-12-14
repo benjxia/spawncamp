@@ -9,16 +9,18 @@ import time
 from winotify import Notification, audio
 
 # EDIT THIS
-COURSE_DEPT = "CSE"
-COURSE_CODE = "151A"
+COURSE_DEPT = "PHYS"
+COURSE_CODE = "2CL"
 TERM_CODE = "WI23"  # ex. FA22 WI23 SP23 S123 S223
+SECTION_ID = ["098783", "098782"] # List of section ID's to enroll in
+UNIT_CNT = "2.00"
 
 # Notification stuff, avoid editing unless you hate the sound or are on mac
-OPENING_NOTIFY = Notification(app_id = "SPAWNCAMP",
-                              title = "COURSE OPENING FOUND",
-                              msg = "GET ON WEGREG (placeholder)",
+ENROLLMENT_NOTIFY = Notification(app_id = "SPAWNCAMP",
+                              title = "ENROLLMENT SUCCESSFUL",
+                              msg = "Enrollment worked :)",
                               duration = "long")
-OPENING_NOTIFY.set_audio(audio.LoopingAlarm, loop = True)
+ENROLLMENT_NOTIFY.set_audio(audio.LoopingAlarm, loop = True)
 
 # Webreg requires you to be signed in in order to receive any information
 # This script uses your existing chrome cookies as authentication. 
@@ -50,7 +52,6 @@ def parse_course_num(code: str) -> str:
     Returns:
     API compatible version of the course code
     """
-    
     course_num = ""
     idx: int = 0
     for i in range(len(code)):
@@ -74,8 +75,10 @@ def parse_course_num(code: str) -> str:
 
 
 prev = None # Previous JSON output from HTTP get
-HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode={TERM_CODE}"
 
+COURSE_CODE = parse_course_num(COURSE_CODE)
+
+HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={COURSE_CODE}&termcode={TERM_CODE}"
 
 if __name__ == "__main__":
     while True:
@@ -95,18 +98,19 @@ if __name__ == "__main__":
         
         prev = requests_json
         cnt = 0
+
         # See if any sections have open seats and print the sections with open spots. 
         for i in range(len(requests_json)):
-            if requests_json[i]['AVAIL_SEAT'] != requests_json[i]['SCTN_CPCTY_QTY'] and int(requests_json[i]['AVAIL_SEAT']) > 0:
-                print(f"Section: {requests_json[i]['SECT_CODE']} Seats: {requests_json[i]['AVAIL_SEAT']}")
-                # Show desktop notification
-                cnt += 1
-        
-        # Make notification if opening in a section. 
-        if cnt != 0:
-            OPENING_NOTIFY.msg = f"OPENING FOUND IN {COURSE_DEPT} {COURSE_CODE}"
-            OPENING_NOTIFY.show()
-            print("------------------------------------------")
+            # If current section has seats
+            if requests_json[i]["AVAIL_SEAT"] != requests_json[i]["SCTN_CPCTY_QTY"] and int(requests_json[i]["AVAIL_SEAT"]) > 0:
+                # IF OPENING IN CORRECT SECTION FOUND, ENROLL IN COURSE
+                if requests_json[i]["SECTION_NUMBER"] in SECTION_ID:
+                    print("OPENING FOUND")
+                    SECT = requests_json[i]["SECTION_NUMBER"]
+                    response = requests.post(f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/add-enroll?section={SECT}&grade=L&unit={UNIT_CNT}&subjcode={COURSE_DEPT}&crsecode={COURSE_CODE}&termcode={TERM_CODE}", cookies= cookie_dict)
+                    if response.status_code == 200:
+                        ENROLLMENT_NOTIFY.show()
+                        exit(0)
         
         # Avoid getting FBI'd for Ddosing webreg. 
         time.sleep(1)
