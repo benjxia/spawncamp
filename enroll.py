@@ -23,7 +23,7 @@ def enroll(SECT_ID: str, COURSE_DEPT: str, COURSE_CODE: str, TERM_CODE: str, UNI
     # Doing this extra edit-enroll HTTP POST is necessary, I don't know why
     HTTP_POST_URL_EDIT = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/edit-enroll?section={SECT_ID}&subjcode={COURSE_DEPT}&crsecode={COURSE_CODE}&termcode={TERM_CODE}"
     requests.post(HTTP_POST_URL_EDIT, cookies=cookie_dict)
-    HTTP_POST_URL_ENROLL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/add-enroll?section={SECT_ID}&grade=L&unit=2.00&subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode={TERM_CODE}"
+    HTTP_POST_URL_ENROLL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/add-enroll?section={SECT_ID}&grade=L&unit={UNIT_CNT}&subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode={TERM_CODE}"
     response = requests.post(HTTP_POST_URL_ENROLL, cookies=cookie_dict)
     return response.status_code
 
