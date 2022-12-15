@@ -7,8 +7,7 @@ import json
 import browser_cookie3
 import time
 from winotify import Notification, audio
-from enroll import parse_course_num
-from enroll import enroll
+from enroll import parse_course_num, enroll
 
 
 # EDIT THIS
