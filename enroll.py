@@ -9,17 +9,13 @@ import time
 from winotify import Notification, audio
 
 
-def enroll(SECT_ID: str, COURSE_DEPT: str, COURSE_CODE: str, TERM_CODE: str, UNIT_CNT: str) -> int:
+def enroll(SECT_ID: str, COURSE_DEPT: str, COURSE_CODE: str, TERM_CODE: str, UNIT_CNT: str, cookie_dict: dict[str, str]) -> int:
     """
     Attempts to enroll in the specified course
-    Returns the enrollment HTTP Post's response code
+    
+    Returns:
+    The enrollment HTTP Post's response code
     """
-    # Grab cookies from chrome for login credentials
-    cookies = browser_cookie3.chrome(domain_name='.ucsd.edu')
-    cookie_dict = dict()
-    for i in cookies:
-        cookie_dict[i.name] = i.value
-
     # Doing this extra edit-enroll HTTP POST is necessary, I don't know why
     HTTP_POST_URL_EDIT = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/edit-enroll?section={SECT_ID}&subjcode={COURSE_DEPT}&crsecode={COURSE_CODE}&termcode={TERM_CODE}"
     requests.post(HTTP_POST_URL_EDIT, cookies=cookie_dict)
@@ -61,8 +57,3 @@ def parse_course_num(code: str) -> str:
     course_out += code[:idx]
 
     return course_out + code[idx:]
-
-
-if __name__ == "__main__":
-    # Test enrollment for debugging, you must satisfy prereqs for PHYS 2CL
-    print(enroll("098784", "PHYS", "2CL", "WI23", "2.00"))
