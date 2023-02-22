@@ -15,8 +15,7 @@ Spawncamp will use your Chrome cookies to make HTTP requests to Webreg's API to 
 
 ### Prerequisites:
 
-Spawncamp only works on Windows because I don't have a Mac or Linux machine to test a potential macOS version***
-If you are on Mac or Linux you can remove the notifications and replace them with whatever you want.  
+**macOS users: See macOS branch, master branch will only work on Windows.**
 
 Spawncamp assumes you satisfy all prerequisites to enroll in the specified course.
 
