@@ -32,4 +32,4 @@ Spawncamp assumes you satisfy all prerequisites to enroll in the specified cours
    ![rip](./assets/sectionid.png)
 2. Sign into Webreg on Google Chrome, you may need to sign in again later when
    the cookies expire.
-3. Run :)
+3. Run `python spawncamp.py`
