@@ -45,6 +45,7 @@ prev = None  # Previous JSON output from HTTP get
 HTTP_GET_URL = f"https://act.ucsd.edu/webreg2/svc/wradapter/secure/search-load-group-data?subjcode={COURSE_DEPT}&crsecode={parse_course_num(COURSE_CODE)}&termcode={TERM_CODE}"
 
 if __name__ == "__main__":
+    print("Spawncamp is running...")
     while True:
         # Fetch info from webreg
         requests_out = requests.get(HTTP_GET_URL, cookies=cookie_dict)
