@@ -1,6 +1,6 @@
 # Spawncamp
 
-Spawncamp is everyone's favorite tool to use during **first pass enrollment** at UCSD. It will automatically enroll you in one of the sections you specify when an opening is found and push a desktop notification for Windows users (remove notification if you want or if you're on Mac/Linux)
+Spawncamp is everyone's favorite tool to use during **first pass enrollment** at UCSD. It will automatically enroll you in one of the sections you specify when an opening is found and push a desktop notification for Windows and MacOS users.
 
 Most useful for people with bad enrollment times and have to deal with full classes before even getting
 a chance to enroll.
@@ -15,15 +15,13 @@ Spawncamp will use your Chrome cookies to make HTTP requests to Webreg's API to 
 
 ### Prerequisites:
 
-**macOS users: See macOS branch, master branch will only work on Windows.**
-
 Spawncamp assumes you satisfy all prerequisites to enroll in the specified course.
 
 ### Installation
 
-1. Clone the repo onto your local machine
-2. Run `pip install -r requirements.txt` in the home directory of the repository.
-3. Edit the script to monitor the class you're trying to get in, remove notifications if you're on Mac or Linux.
+1. Clone this repo onto your local machine 
+2. Edit the script to monitor the class you're trying to get in.
+3. Spawncamp will manage installing dependencies depending on your operating system :)
 
 ### Usage
 
@@ -32,4 +30,6 @@ Spawncamp assumes you satisfy all prerequisites to enroll in the specified cours
    ![rip](./assets/sectionid.png)
 2. Sign into Webreg on Google Chrome, you may need to sign in again later when
    the cookies expire.
-3. Run `python spawncamp.py`
+3. Close Chrome - Spawncamp can't access your cookies if Chrome is open.
+You can reopen it after starting Spawncamp.
+4. Run `python spawncamp.py` (or `python3 spawncamp.py`)
